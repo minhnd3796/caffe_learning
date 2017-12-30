@@ -51,8 +51,10 @@ Classifier::Classifier(const string& model_file,
                        const string& label_file) {
 #ifdef CPU_ONLY
   Caffe::set_mode(Caffe::CPU);
+  std::cout << "Using CPU-only to recognize" << std::endl;
 #else
   Caffe::set_mode(Caffe::GPU);
+  std::cout << "Using GPU to recognize" << std::endl;
 #endif
 
   /* Load the network. */
@@ -106,7 +108,7 @@ std::vector<Prediction> Classifier::Classify(const cv::Mat& img, int N) {
   std::vector<float> output = Predict(img);
 
   N = std::min<int>(labels_.size(), N);
-  std::cout << N << std::endl;
+  // std::cout << N << std::endl;
   std::vector<int> maxN = Argmax(output, N);
   std::vector<Prediction> predictions;
   for (int i = 0; i < N; ++i) {
@@ -232,11 +234,11 @@ void Classifier::Preprocess(const cv::Mat& img,
   }
   std::cout << std::endl; */
   cv::split(sample_normalized, *input_channels);
-  for (int i = 0; i < input_geometry_.width * input_geometry_.height; i++)
+  /* for (int i = 0; i < input_geometry_.width * input_geometry_.height; i++)
   {
     std::cout << net_->input_blobs()[0]->cpu_data()[i] << " ";
   }
-  std::cout << std::endl;
+  std::cout << std::endl; */
 
   CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
         == net_->input_blobs()[0]->cpu_data())

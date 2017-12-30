@@ -1,8 +1,7 @@
-// g++ MNIST_test.cpp -L/home/minhnd/Desktop/caffe/build/lib/-lcaffe -I/home/minhnd/Desktop/caffe/include -I/usr/local/cuda/include -lopencv_imgcodecs -lopencv_core -lboost_system
-
 #include <iostream>
 #include <caffe/caffe.hpp>
 #include <opencv2/opencv.hpp>
+#include <string>
 
 bool PairCompare(const std::pair<float, int>& lhs,
                         const std::pair<float, int>& rhs) {
@@ -24,8 +23,9 @@ std::vector<int> Argmax(const std::vector<float>& v, int N) {
 int main(int argc, char *argv[])
 {
     int num_channels_input; // number of color channel
-    caffe::Caffe::set_mode(caffe::Caffe::CPU); // use CPU only
-    cv::Mat img = cv::imread("sketch-5.png", CV_LOAD_IMAGE_GRAYSCALE); // image variable
+    caffe::Caffe::set_mode(caffe::Caffe::GPU); // use GPU also
+    std::string img_filename = argv[1];
+    cv::Mat img = cv::imread(img_filename, CV_LOAD_IMAGE_GRAYSCALE); // image variable
     std::shared_ptr<caffe::Net<float> > net_; // declare a network variable
 
     net_.reset(new caffe::Net<float>("lenet_deploy.prototxt", caffe::TEST)); // network architecture
@@ -80,9 +80,9 @@ int main(int argc, char *argv[])
 
     std::vector<int> maxN = Argmax(output, 10);
 
-    for(int n : maxN)
+    for(int item : maxN)
     {
-        std::cout << n << std::endl;
+        std::cout << item << std::endl;
     }
 
     /* std::cout << "Image size: Width: " << img.size().width << " Height: " << img.size().height << std::endl;
